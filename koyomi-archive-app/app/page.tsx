@@ -95,11 +95,11 @@ export default function KoyomiArchive() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <button onClick={() => setView('description')} className="bg-white border-4 border-white p-10 rounded-3xl shadow-lg hover:border-gray-400 transition-all flex flex-col items-center group">
-                <span className="text-5xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-circle-info"></i></span>
+                <span className="text-5xl mb-4 group-hover:scale-110 transition-transform">📖</span>
                 <span className="text-xl font-black">このサイトについて</span>
               </button>
               <button onClick={() => setView('history')} className="bg-white border-4 border-white p-10 rounded-3xl shadow-lg hover:border-gray-400 transition-all flex flex-col items-center group">
-                <span className="text-5xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-regular fa-calendar"></i></span>
+                <span className="text-5xl mb-4 group-hover:scale-110 transition-transform">📅</span>
                 <span className="text-xl font-black">日付から探す</span>
               </button>
             </div>
@@ -181,7 +181,7 @@ export default function KoyomiArchive() {
               <p>このサイトは、ストグラに登場する「暦家」のメンバーが、日々の活動の中で出会った住民たちを記録するための非公式ファンサイトです。</p>
 
               <div className="p-8 bg-red-50 rounded-2xl border-2 border-red-200 flex gap-6 items-start">
-                <span className="text-4xl">⚠<i class="fa-solid fa-triangle-exclamation" style="color: #FFD43B;"></i></span>
+                <span className="text-4xl">⚠️</span>
                 <div>
                   <h3 className="text-red-600 font-black text-xl mb-2">注意事項</h3>
                   <p className="text-red-700 text-base">
@@ -227,7 +227,7 @@ const EncounterCard = ({ item }: { item: any }) => {
             <span className="text-base font-bold text-gray-400 ml-4">配信者：{item.住民プレイヤー}</span>
           </div>
           <div className="text-base text-gray-600 font-bold flex items-center gap-2">
-            <span className="text-xl"><i class="fa-solid fa-map-pin"></i></span> 会った場所：{item.場所 || "（不明）"}
+            <span className="text-xl">📍</span> 会った場所：{item.場所 || "（不明）"}
           </div>
           {item.備考 && <div className="text-sm bg-gray-50 p-3 rounded border-l-4 border-gray-300 text-gray-500 font-bold">{item.備考}</div>}
         </div>
