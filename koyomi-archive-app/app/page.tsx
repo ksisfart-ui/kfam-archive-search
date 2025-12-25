@@ -232,7 +232,7 @@ export default function KoyomiArchive() {
 
             <div className="space-y-10 text-base text-slate-600 leading-relaxed">
               <section className="space-y-4">
-                <p>当サイトは、ストグラに登場する「暦家」のメンバーが、日々の活動で出会った住民の方々の情報を記録・検索するための<strong>非公式ファンサイト</strong>です。</p>
+                <p>本サイトは、ストグラに登場する「暦家」のメンバーが出会った住民の視点情報を記録・検索するための<strong>非公式ファンサイト</strong>です。</p>
               </section>
 
               <section className="bg-amber-50 p-6 rounded-2xl border border-amber-100 space-y-3">
@@ -240,10 +240,10 @@ export default function KoyomiArchive() {
                   <span>⚠️</span> 注意事項
                 </h3>
                 <ul className="text-sm text-amber-800 space-y-2 list-disc pl-5">
-                  <li><strong>各配信者様および運営様とは一切関係ありません。</strong></li>
+                  <li><strong>各配信者様および運営様とは一切関係ありません。また、予告なく非公開とする場合がございます。</strong></li>
                   <li>情報の正確性には努めておりますが、有志による手動更新のため、間違いや抜け漏れが起こりうることをご了承ください。</li>
                   <li><strong>ネタバレへの配慮：</strong>本サイトには誰が誰と出会ったかという情報が含まれます。未視聴の配信がある場合はご注意ください。</li>
-                  <li><strong>メタ情報の取り扱い：</strong>本サイトの情報を配信内のチャットやSNSで過度に拡散し、ロールプレイ（RP）の進行を妨げるような行為はお控えください。</li>
+                  <li><strong>メタ情報の取り扱い：</strong>本サイトの情報を配信内のチャットやSNSで過度に拡散し、ロールプレイ（RP）の進行を妨げるような行為（お気持ち・鳩行為・指示コメントなど）はお控えください。</li>
                 </ul>
               </section>
 
@@ -258,12 +258,12 @@ export default function KoyomiArchive() {
                   <p className="font-bold text-slate-700">情報の追加・修正はこちらまで</p>
                 </div>
                 <a
-                  href="https://x.com/YourAccount"
+                  href="https://x.com/admiral_splus"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-[#1DA1F2] text-white px-8 py-3 rounded-full font-bold hover:bg-[#1a91da] transition-colors flex items-center gap-2"
                 >
-                  X (Twitter) を開く
+                  アド🍉 @admiral_splus
                 </a>
               </section>
             </div>
