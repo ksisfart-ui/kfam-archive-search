@@ -25,6 +25,7 @@ export default function EncounterPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState('全員');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Papa.parse(CSV_URL, {
@@ -32,51 +33,64 @@ export default function EncounterPage() {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        setData(results.data);
+        if (results.data.length > 0) {
+          setData(results.data);
+        } else {
+          setError("CSVデータの取得に成功しましたが、中身が空です。");
+        }
         setLoading(false);
       },
+      error: (err) => {
+        setError("CSVの読み込みに失敗しました: " + err.message);
+        setLoading(false);
+      }
     });
   }, []);
 
-  // フィルタリングロジック
+  // フィルタリングロジック（カラム名に正確に合わせました）
   const filteredData = useMemo(() => {
     return data.filter((item) => {
+      const charName = item.住民キャラ || "";
+      const playerName = item.住民プレイヤー || "";
+      const location = item.場所 || "";
+      const note = item.備考 || "";
+      const attr = item.属性 || "";
+
       const matchSearch =
-        (item.住民キャラ + item.住民プレイヤー + item.場所 + item.備考 + item.属性)
+        (charName + playerName + location + note + attr)
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
+
       const matchMember = selectedMember === '全員' || item.暦家キャラ === selectedMember;
       return matchSearch && matchMember;
-    }).reverse(); // 新しい日付順
+    }).reverse();
   }, [data, searchTerm, selectedMember]);
 
-  if (loading) return <div className="flex justify-center items-center h-screen text-gray-500">読み込み中...</div>;
+  if (loading) return <div className="flex justify-center items-center h-screen font-sans text-gray-400">データを読み込み中...</div>;
+  if (error) return <div className="p-10 text-red-500 font-sans">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
-      {/* ヘッダー */}
-      <header className="bg-white border-b sticky top-0 z-10 p-6 shadow-sm">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-xl font-bold tracking-tight mb-4" style={{ color: MEMBER_COLORS["暦家"] }}>
-            暦家 出会い住民アーカイブ
+    <div className="min-h-screen bg-[#fafafa] text-gray-900 font-sans">
+      <header className="bg-white border-b sticky top-0 z-10 px-6 py-4 shadow-sm">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <h1 className="text-xl font-bold flex items-center gap-2" style={{ color: MEMBER_COLORS["暦家"] }}>
+            <span className="w-2 h-6 rounded-full" style={{ backgroundColor: MEMBER_COLORS["暦家"] }}></span>
+            暦家 出会い住民まとめ
           </h1>
 
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* 検索バー */}
+          <div className="flex gap-2 flex-1 md:max-w-xl">
             <input
               type="text"
               placeholder="住民名、場所、属性で検索..."
-              className="flex-1 border border-gray-200 rounded-full px-5 py-2 focus:outline-none focus:ring-2 focus:ring-[#b28c6e]/20"
+              className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#b28c6e]/20 transition-all"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-
-            {/* メンバーフィルター */}
             <select
-              className="border border-gray-200 rounded-full px-5 py-2 bg-white appearance-none cursor-pointer"
+              className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white cursor-pointer outline-none"
               value={selectedMember}
               onChange={(e) => setSelectedMember(e.target.value)}
             >
-              <option value="全員">全メンバー表示</option>
+              <option value="全員">全員</option>
               {Object.keys(MEMBER_COLORS).filter(k => k !== "暦家").map(name => (
                 <option key={name} value={name}>{name}</option>
               ))}
@@ -85,83 +99,65 @@ export default function EncounterPage() {
         </div>
       </header>
 
-      {/* メインコンテンツ */}
-      <main className="max-w-6xl mx-auto p-4 md:p-6">
-        <div className="grid gap-4">
+      <main className="max-w-5xl mx-auto p-4 md:p-8">
+        <div className="grid gap-3">
           {filteredData.map((item, index) => {
-            const memberColor = MEMBER_COLORS[item.暦家キャラ] || "#666";
-            // 背景が暗い場合にテキストを白くする簡易判定
+            const memberColor = MEMBER_COLORS[item.暦家キャラ] || "#999";
             const isDark = memberColor === "#000b00" || memberColor === "#113c70";
 
             return (
-              <div key={item.ID || index} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+              <div key={item.ID || index} className="bg-white rounded-lg border border-gray-100 shadow-sm hover:border-gray-300 transition-all overflow-hidden">
                 <div className="flex flex-col md:flex-row">
-                  {/* 左側：メンバーラベル */}
+                  {/* 左帯：キャラ名 */}
                   <div
-                    className="md:w-32 flex items-center justify-center p-3 text-sm font-bold"
+                    className="md:w-28 flex items-center justify-center py-2 md:py-0 text-xs font-bold"
                     style={{ backgroundColor: memberColor, color: isDark ? '#fff' : '#1a1a1a' }}
                   >
                     {item.暦家キャラ}
                   </div>
 
-                  {/* 中央：情報 */}
+                  {/* コンテンツ */}
                   <div className="flex-1 p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs text-gray-400 font-mono">{item.日付}</span>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono text-gray-400">{item.日付}</span>
                         {item.属性 && (
-                          <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full uppercase">
+                          <span className="text-[9px] bg-gray-50 text-gray-400 border border-gray-100 px-1.5 py-0.5 rounded">
                             {item.属性}
                           </span>
                         )}
                       </div>
-                      <div className="text-lg font-bold">
+                      <div className="font-bold text-gray-800">
                         {item.住民キャラ}
-                        <span className="text-sm font-normal text-gray-400 ml-2">({item.住民プレイヤー})</span>
+                        <span className="text-xs font-normal text-gray-400 ml-2">(@{item.住民プレイヤー})</span>
                       </div>
-                      <div className="text-sm text-gray-600 mt-1 flex items-center gap-1">
-                        <span className="opacity-60">📍</span> {item.場所 || "不明"}
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <span className="grayscale opacity-50">📍</span> {item.場所 || "場所不明"}
                       </div>
                     </div>
 
-                    {/* 右側：ボタンと備考 */}
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-3">
+                      {item.備考 && <p className="hidden lg:block text-[11px] text-gray-400 italic max-w-xs truncate">{item.備考}</p>}
                       <a
                         href={item.URL}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors border"
-                        style={{
-                          borderColor: memberColor,
-                          color: memberColor,
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = memberColor;
-                          e.currentTarget.style.color = isDark ? '#fff' : '#1a1a1a';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = memberColor;
-                        }}
+                        className="px-4 py-1.5 rounded text-xs font-bold transition-all border hover:bg-gray-50"
+                        style={{ borderColor: memberColor, color: memberColor }}
                       >
-                        {item.配信}で見る
+                        {item.配信}を開く
                       </a>
                     </div>
                   </div>
                 </div>
-                {item.備考 && (
-                  <div className="px-4 py-2 bg-gray-50 text-xs text-gray-500 border-t border-gray-100">
-                    備考: {item.備考}
-                  </div>
-                )}
               </div>
             );
           })}
         </div>
 
-        {filteredData.length === 0 && (
-          <div className="text-center py-20 text-gray-400">
-            条件に一致する出会いが見つかりませんでした。
+        {filteredData.length === 0 && !loading && (
+          <div className="text-center py-20 text-gray-300 text-sm">
+            該当するデータが見つかりませんでした。
           </div>
         )}
       </main>
