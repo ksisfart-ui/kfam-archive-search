@@ -21,6 +21,9 @@ export default function KoyomiArchive() {
   const [selectedDate, setSelectedDate] = useState('');
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null); // ホームのアコーディオン用
+  // --- 修正点：日付一覧用のフィルターステート ---
+  const [historyYear, setHistoryYear] = useState('すべて');
+  const [historyMonth, setHistoryMonth] = useState('すべて');
 
   const [filters, setFilters] = useState({
     member: '全員', resident: '', attr: '', platform: '全員', season: '全員'
@@ -90,29 +93,20 @@ export default function KoyomiArchive() {
                 <span className="text-sm font-mono bg-slate-200 px-3 py-1 rounded-md text-slate-700 font-bold">{latestDate}</span>
               </div>
               <div className="space-y-2">
-                {/* 姉妹の出生順に従って、その日のデータをグループ化して表示 */}
                 {BIRTH_ORDER.map((memberName) => {
-                  // 最新の日付において、該当するメンバーのデータを抽出
                   const memberEncounters = data.filter(d => d.日付 === latestDate && d.暦家キャラ === memberName);
                   if (memberEncounters.length === 0) return null;
-
                   const id = `home-member-${memberName}`;
                   const isExpanded = expandedId === id;
                   return (
                     <div key={id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm transition-all">
-                      {/* アコーディオンのヘッダー：メンバー名のみを表示 */}
-                      <button
-                        onClick={() => setExpandedId(isExpanded ? null : id)}
-                        className="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-colors"
-                      >
+                      <button onClick={() => setExpandedId(isExpanded ? null : id)} className="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-colors">
                         <div className="flex items-center gap-4">
                           <span className="w-3 h-3 rounded-full" style={{ backgroundColor: MEMBER_INFO[memberName] }}></span>
                           <span className="font-bold text-lg">{memberName}</span>
                         </div>
                         <span className={`text-slate-300 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
                       </button>
-
-                      {/* アコーディオンの中身：出会った住民のリスト */}
                       {isExpanded && (
                         <div className="px-5 pb-2 animate-in fade-in slide-in-from-top-1 duration-200 divide-y divide-slate-100">
                           {memberEncounters.map((item, idx) => (
@@ -127,18 +121,15 @@ export default function KoyomiArchive() {
                 })}
               </div>
               <button onClick={() => setView('history')} className="w-full py-6 mt-8 border-2 border-dashed border-slate-300 rounded-2xl text-slate-500 hover:text-[#b28c6e] hover:border-[#b28c6e] hover:bg-white transition-all text-base font-bold">
-                過去の日付一覧を見る
+                過去の記録を見る
               </button>
             </section>
 
-            <div className="grid grid-cols-2 gap-6">
-              <button onClick={() => setView('description')} className="bg-white border border-slate-200 p-10 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col items-center">
+            {/* 修正点：中央に「サイトの説明」ボタンのみ配置 */}
+            <div className="flex justify-center">
+              <button onClick={() => setView('description')} className="bg-white border border-slate-200 px-16 py-10 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col items-center w-full md:w-1/2">
                 <span className="text-4xl mb-4">📖</span>
-                <span className="text-base font-bold text-slate-700">サイトの説明</span>
-              </button>
-              <button onClick={() => setView('history')} className="bg-white border border-slate-200 p-10 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col items-center">
-                <span className="text-4xl mb-4">📅</span>
-                <span className="text-base font-bold text-slate-700">日付から探す</span>
+                <span className="text-base font-bold text-slate-700">このサイトについて</span>
               </button>
             </div>
           </div>
@@ -151,12 +142,39 @@ export default function KoyomiArchive() {
               <h2 className="text-2xl font-bold">アーカイブ一覧</h2>
               <button onClick={() => setView('home')} className="text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors">ホームへ戻る</button>
             </div>
+
+            {/* 修正点：年月フィルターの追加 */}
+            <div className="flex gap-4 mb-8">
+              <select
+                className="flex-1 border-slate-200 border rounded-lg p-3 bg-white outline-none focus:ring-2 focus:ring-[#b28c6e]/20 text-sm font-bold"
+                value={historyYear}
+                onChange={(e) => setHistoryYear(e.target.value)}
+              >
+                <option value="すべて">すべての年</option>
+                {Array.from(new Set(data.map(d => d.日付.split('/')[0]))).sort().reverse().map(y => <option key={y} value={y}>{y}年</option>)}
+              </select>
+              <select
+                className="flex-1 border-slate-200 border rounded-lg p-3 bg-white outline-none focus:ring-2 focus:ring-[#b28c6e]/20 text-sm font-bold"
+                value={historyMonth}
+                onChange={(e) => setHistoryMonth(e.target.value)}
+              >
+                <option value="すべて">すべての月</option>
+                {["01","02","03","04","05","06","07","08","09","10","11","12"].map(m => <option key={m} value={m}>{m}月</option>)}
+              </select>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Array.from(new Set(data.map(d => d.日付))).sort().reverse().map(date => (
-                <button key={date} onClick={() => { setSelectedDate(date); setView('detail'); }} className="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center hover:border-[#b28c6e] hover:shadow-md transition-all group">
-                  <span className="font-mono text-lg font-bold text-slate-700">{date.replace(/\//g, ' / ')}</span>
-                  <span className="text-sm font-bold text-slate-400 group-hover:text-[#b28c6e]">⇒</span>
-                </button>
+              {Array.from(new Set(data.map(d => d.日付)))
+                .sort().reverse()
+                .filter(date => {
+                  const [y, m] = date.split('/');
+                  return (historyYear === 'すべて' || y === historyYear) && (historyMonth === 'すべて' || m === historyMonth);
+                })
+                .map(date => (
+                  <button key={date} onClick={() => { setSelectedDate(date); setView('detail'); }} className="bg-white p-6 rounded-2xl border border-slate-200 flex justify-between items-center hover:border-[#b28c6e] hover:shadow-md transition-all group">
+                    <span className="font-mono text-lg font-bold text-slate-700">{date.replace(/\//g, ' / ')}</span>
+                    <span className="text-sm font-bold text-slate-400 group-hover:text-[#b28c6e]">⇒</span>
+                  </button>
               ))}
             </div>
           </div>
@@ -180,8 +198,8 @@ export default function KoyomiArchive() {
                 <option value="S1">Season1</option>
                 <option value="S2">Season2</option>
               </select>
-              <input type="text" placeholder="住民名・読みで検索" className="border-slate-200 border rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#b28c6e]/20" value={filters.resident} onChange={e => setFilters({...filters, resident: e.target.value})} />
-              <input type="text" placeholder="属性・読みで検索" className="border-slate-200 border rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#b28c6e]/20" value={filters.attr} onChange={e => setFilters({...filters, attr: e.target.value})} />
+              <input type="text" placeholder="住民名で検索" className="border-slate-200 border rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#b28c6e]/20" value={filters.resident} onChange={e => setFilters({...filters, resident: e.target.value})} />
+              <input type="text" placeholder="属性で検索" className="border-slate-200 border rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#b28c6e]/20" value={filters.attr} onChange={e => setFilters({...filters, attr: e.target.value})} />
               <select className="border-slate-200 border rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#b28c6e]/20" value={filters.platform} onChange={e => setFilters({...filters, platform: e.target.value})}>
                 <option value="全員">全媒体</option>
                 <option value="Twitch">Twitch</option>
@@ -204,25 +222,49 @@ export default function KoyomiArchive() {
           </div>
         )}
 
-        {/* --- 説明画面 --- */}
+        {/* --- サイトの説明画面 --- */}
         {view === 'description' && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-12 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 md:p-12 shadow-sm">
             <div className="flex justify-between items-center mb-10 border-b pb-4">
               <h2 className="text-2xl font-bold">このサイトについて</h2>
               <button onClick={() => setView('home')} className="text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors">ホームへ戻る</button>
             </div>
-            <div className="space-y-6 text-base text-slate-600 leading-relaxed">
-              <p>本サイトは、ストグラに登場する「暦家」のメンバーが、日々の活動で出会った住民たちを記録・検索するための非公式ファンサイトです。</p>
-              <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 flex gap-4 text-sm text-amber-800">
-                <span className="text-2xl">⚠️</span>
-                <p>各配信者様および運営様とは一切関係ありません。情報の正確性には努めておりますが、抜け漏れ等が発生する場合がございます。</p>
-              </div>
-              <section className="bg-slate-50 p-8 rounded-2xl">
-                <h3 className="text-sm font-black text-slate-900 mb-4 uppercase tracking-widest">制作者・お問い合わせ</h3>
-                <div className="flex items-center gap-3">
-                  <span className="bg-white px-4 py-2 rounded-lg border border-slate-200 font-bold">アド🍉</span>
-                  <a href="https://x.com/admiral_splus" className="text-[#b28c6e] font-bold hover:underline text-lg">@admiral_splus</a>
+
+            <div className="space-y-10 text-base text-slate-600 leading-relaxed">
+              <section className="space-y-4">
+                <p>当サイトは、ストグラに登場する「暦家」のメンバーが、日々の活動で出会った住民の方々の情報を記録・検索するための<strong>非公式ファンサイト</strong>です。</p>
+              </section>
+
+              <section className="bg-amber-50 p-6 rounded-2xl border border-amber-100 space-y-3">
+                <h3 className="font-bold text-amber-900 flex items-center gap-2">
+                  <span>⚠️</span> 注意事項
+                </h3>
+                <ul className="text-sm text-amber-800 space-y-2 list-disc pl-5">
+                  <li><strong>各配信者様および運営様とは一切関係ありません。</strong></li>
+                  <li>情報の正確性には努めておりますが、有志による手動更新のため、間違いや抜け漏れが起こりうることをご了承ください。</li>
+                  <li><strong>ネタバレへの配慮：</strong>本サイトには誰が誰と出会ったかという情報が含まれます。未視聴の配信がある場合はご注意ください。</li>
+                  <li><strong>メタ情報の取り扱い：</strong>本サイトの情報を配信内のチャットやSNSで過度に拡散し、ロールプレイ（RP）の進行を妨げるような行為はお控えください。</li>
+                </ul>
+              </section>
+
+              <section className="space-y-4">
+                <h3 className="font-bold text-slate-900 border-l-4 border-[#b28c6e] pl-3">情報の修正依頼について</h3>
+                <p className="text-sm">記載ミスや、未掲載の出会い情報がございましたら、お手数ですが下記の制作者SNSまでDMにてお知らせいただけますと幸いです。</p>
+              </section>
+
+              <section className="bg-slate-50 p-8 rounded-2xl border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">制作者 / お問い合わせ</h3>
+                  <p className="font-bold text-slate-700">情報の追加・修正はこちらまで</p>
                 </div>
+                <a
+                  href="https://x.com/YourAccount"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#1DA1F2] text-white px-8 py-3 rounded-full font-bold hover:bg-[#1a91da] transition-colors flex items-center gap-2"
+                >
+                  X (Twitter) を開く
+                </a>
               </section>
             </div>
           </div>
