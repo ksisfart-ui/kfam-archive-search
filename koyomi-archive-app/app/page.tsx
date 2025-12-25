@@ -232,7 +232,7 @@ export default function KoyomiArchive() {
 
             <div className="space-y-10 text-base text-slate-600 leading-relaxed">
               <section className="space-y-4">
-                <p>本サイトは、ストグラに登場する「暦家」のメンバーが出会った住民の視点情報を記録・検索するための<strong>非公式ファンサイト</strong>です。</p>
+                <p>本サイトは、ストグラに登場する「暦家」のメンバーが出会った住民のアーカイブ情報を記録・検索するための<strong>非公式ファンサイト</strong>です。</p>
               </section>
 
               <section className="bg-amber-50 p-6 rounded-2xl border border-amber-100 space-y-3">
@@ -240,10 +240,10 @@ export default function KoyomiArchive() {
                   <span>⚠️</span> 注意事項
                 </h3>
                 <ul className="text-sm text-amber-800 space-y-2 list-disc pl-5">
-                  <li><strong>各配信者様および運営様とは一切関係ありません。また、予告なく非公開とする場合がございます。</strong></li>
+                  <li><strong>各配信者様および運営様とは一切関係ありません。</strong>また、予告なく非公開とする場合がございます。</li>
                   <li>情報の正確性には努めておりますが、有志による手動更新のため、間違いや抜け漏れが起こりうることをご了承ください。</li>
                   <li><strong>ネタバレへの配慮：</strong>本サイトには誰が誰と出会ったかという情報が含まれます。未視聴の配信がある場合はご注意ください。</li>
-                  <li><strong>メタ情報の取り扱い：</strong>本サイトの情報を配信内のチャットやSNSで過度に拡散し、ロールプレイ（RP）の進行を妨げるような行為（お気持ち・鳩行為・指示コメントなど）はお控えください。</li>
+                  <li><strong>メタ情報の取り扱い：</strong>本サイトの情報を配信内のチャットやSNSで過度に拡散し、ロールプレイ（RP）の進行を妨げるような行為はお控えください。</li>
                 </ul>
               </section>
 
@@ -301,7 +301,7 @@ const EncounterCardContent = ({ item }: { item: any }) => (
       </div>
     </div>
     <a href={item.URL} target="_blank" rel="noopener noreferrer" className="text-center bg-slate-900 text-white text-[11px] font-bold px-6 py-3 rounded-full hover:bg-slate-700 transition-colors tracking-widest shadow-sm">
-      {item.配信}を開く
+      {item.配信}
     </a>
   </div>
 );
