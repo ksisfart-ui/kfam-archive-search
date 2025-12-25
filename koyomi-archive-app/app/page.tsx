@@ -21,7 +21,6 @@ export default function KoyomiArchive() {
   const [selectedDate, setSelectedDate] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // フィルター用ステート
   const [filters, setFilters] = useState({
     member: '全員', resident: '', attr: '', platform: '全員', season: '全員'
   });
@@ -36,7 +35,6 @@ export default function KoyomiArchive() {
     });
   }, []);
 
-  // 出生順 ＆ 日付順のソート
   const sortData = (list: any[]) => {
     return [...list].sort((a, b) => {
       if (b.日付 !== a.日付) return b.日付.localeCompare(a.日付);
@@ -61,111 +59,110 @@ export default function KoyomiArchive() {
     return [...data].sort((a, b) => b.日付.localeCompare(a.日付))[0].日付;
   }, [data]);
 
-  if (loading) return <div className="flex justify-center items-center h-screen bg-white font-sans text-gray-400">Loading Archive...</div>;
+  if (loading) return <div className="flex justify-center items-center h-screen bg-gray-100 font-bold text-gray-600">データを読み込み中...</div>;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-gray-800 font-sans pb-20">
-      <header className="bg-white border-b px-6 py-8 mb-8 shadow-sm">
+    <div className="min-h-screen bg-gray-200 text-gray-900 font-sans pb-20">
+      {/* ヘッダー：色を濃く、日本語に */}
+      <header className="bg-white border-b-4 border-gray-300 px-6 py-10 mb-8 shadow-md">
         <div className="max-w-4xl mx-auto flex flex-col items-center">
-          <h1 className="text-3xl font-black tracking-tighter italic" style={{ color: MEMBER_INFO["暦家"] }}>KOYOMI FAMILY ARCHIVE</h1>
-          <div className="h-1 w-12 bg-gray-100 my-2 rounded-full"></div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Street Graffiti Roleplay Records</p>
+          <h1 className="text-4xl font-black tracking-tight" style={{ color: MEMBER_INFO["暦家"] }}>暦家出会いまとめ</h1>
+          <div className="h-1.5 w-20 bg-gray-200 my-4 rounded-full"></div>
+          <p className="text-base font-bold text-gray-500 uppercase tracking-widest">住民記録データベース</p>
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4">
 
-        {/* --- HOME VIEW --- */}
+        {/* --- ホーム画面 --- */}
         {view === 'home' && (
           <div className="space-y-12">
             <section>
-              <div className="flex justify-between items-end mb-4 px-1">
-                <h2 className="text-xs font-black uppercase tracking-widest text-gray-400">Latest Encounters</h2>
-                <span className="text-[10px] font-mono bg-gray-200 px-2 py-0.5 rounded text-gray-600">{latestDate}</span>
+              <div className="flex justify-between items-end mb-6 px-1">
+                <h2 className="text-xl font-black text-gray-800 border-l-8 border-gray-900 pl-3">最新の記録</h2>
+                <span className="text-base font-bold bg-gray-800 px-3 py-1 rounded text-white">{latestDate}</span>
               </div>
               {sortData(data.filter(d => d.日付 === latestDate)).map((item, i) => (
                 <EncounterCard key={i} item={item} />
               ))}
               <button
                 onClick={() => setView('history')}
-                className="w-full py-5 mt-6 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 hover:text-[#b28c6e] hover:border-[#b28c6e]/30 hover:bg-[#b28c6e]/5 transition-all text-xs font-bold"
+                className="w-full py-6 mt-8 border-4 border-dashed border-gray-400 rounded-2xl text-gray-600 hover:text-black hover:border-gray-600 hover:bg-white transition-all text-lg font-black"
               >
                 過去のアーカイブをすべて見る
               </button>
             </section>
 
-            <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => setView('description')} className="bg-white border border-gray-100 p-8 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col items-center group">
-                <span className="text-3xl mb-3 group-hover:scale-110 transition-transform">📖</span>
-                <span className="text-xs font-bold text-gray-500">サイトの説明</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <button onClick={() => setView('description')} className="bg-white border-4 border-white p-10 rounded-3xl shadow-lg hover:border-gray-400 transition-all flex flex-col items-center group">
+                <span className="text-5xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-circle-info"></i></span>
+                <span className="text-xl font-black">このサイトについて</span>
               </button>
-              <button onClick={() => setView('history')} className="bg-white border border-gray-100 p-8 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col items-center group">
-                <span className="text-3xl mb-3 group-hover:scale-110 transition-transform">📅</span>
-                <span className="text-xs font-bold text-gray-500">日付から探す</span>
+              <button onClick={() => setView('history')} className="bg-white border-4 border-white p-10 rounded-3xl shadow-lg hover:border-gray-400 transition-all flex flex-col items-center group">
+                <span className="text-5xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-regular fa-calendar"></i></span>
+                <span className="text-xl font-black">日付から探す</span>
               </button>
             </div>
           </div>
         )}
 
-        {/* --- HISTORY VIEW --- */}
+        {/* --- 日付一覧画面 --- */}
         {view === 'history' && (
           <div>
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-bold italic">History List</h2>
-              <button onClick={() => setView('home')} className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">BACK TO HOME</button>
+            <div className="flex justify-between items-center mb-8 border-b-2 border-gray-300 pb-4">
+              <h2 className="text-3xl font-black text-gray-800">日付別一覧</h2>
+              <button onClick={() => setView('home')} className="bg-gray-800 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-black transition-colors">ホームに戻る</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Array.from(new Set(data.map(d => d.日付))).sort().reverse().map(date => (
                 <button
                   key={date}
                   onClick={() => { setSelectedDate(date); setView('detail'); }}
-                  className="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-center hover:border-[#b28c6e] hover:shadow-sm transition-all group"
+                  className="bg-white p-6 rounded-2xl border-2 border-gray-300 flex justify-between items-center hover:border-black hover:shadow-xl transition-all group"
                 >
-                  <span className="font-mono font-bold text-gray-600">{date.replace(/\//g, ' . ')}</span>
-                  <span className="text-[10px] font-bold text-gray-300 group-hover:text-[#b28c6e] transition-colors">VIEW ALL →</span>
+                  <span className="text-xl font-bold text-gray-800">{date.replace(/\//g, ' / ')}</span>
+                  <span className="text-sm font-black text-gray-400 group-hover:text-black transition-colors">内容を見る →</span>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* --- DETAIL VIEW --- */}
+        {/* --- 詳細画面 --- */}
         {view === 'detail' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold italic">{selectedDate}</h2>
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-black text-gray-900">{selectedDate} <span className="text-lg text-gray-500 font-bold ml-2">の記録</span></h2>
+              <button onClick={() => setView('history')} className="bg-gray-800 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-black transition-colors">一覧に戻る</button>
+            </div>
+
+            {/* フィルター：枠を太く、文字を大きく */}
+            <div className="bg-white border-4 border-gray-300 rounded-2xl p-6 mb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 shadow-md">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-black text-gray-500">暦家メンバー</label>
+                <select className="border-2 border-gray-300 rounded-lg p-3 outline-none focus:border-black font-bold" value={filters.member} onChange={e => setFilters({...filters, member: e.target.value})}>
+                  <option value="全員">全員表示</option>
+                  {BIRTH_ORDER.map(name => <option key={name} value={name}>{name}</option>)}
+                </select>
               </div>
-              <button onClick={() => setView('history')} className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">BACK TO LIST</button>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-black text-gray-500">シーズン</label>
+                <select className="border-2 border-gray-300 rounded-lg p-3 outline-none focus:border-black font-bold" value={filters.season} onChange={e => setFilters({...filters, season: e.target.value})}>
+                  <option value="全員">全シーズン</option>
+                  <option value="Season1">Season1</option>
+                  <option value="Season2">Season2</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-black text-gray-500">住民名検索</label>
+                <input
+                  type="text" placeholder="名前を入力..." className="border-2 border-gray-300 rounded-lg p-3 outline-none focus:border-black font-bold"
+                  value={filters.resident} onChange={e => setFilters({...filters, resident: e.target.value})}
+                />
+              </div>
             </div>
 
-            {/* フィルターバー（不具合修正：内部定義からインラインJSXに変更） */}
-            <div className="bg-white border border-gray-100 rounded-2xl p-4 mb-8 grid grid-cols-2 md:grid-cols-5 gap-3 shadow-sm text-[11px]">
-              <select className="border-gray-100 border rounded-lg p-2 outline-none" value={filters.member} onChange={e => setFilters({...filters, member: e.target.value})}>
-                <option value="全員">全メンバー</option>
-                {BIRTH_ORDER.map(name => <option key={name} value={name}>{name}</option>)}
-              </select>
-              <select className="border-gray-100 border rounded-lg p-2 outline-none" value={filters.season} onChange={e => setFilters({...filters, season: e.target.value})}>
-                <option value="全員">全シーズン</option>
-                <option value="Season1">Season1</option>
-                <option value="Season2">Season2</option>
-              </select>
-              <input
-                type="text" placeholder="住民名で検索..." className="border-gray-100 border rounded-lg p-2 outline-none focus:border-[#b28c6e]"
-                value={filters.resident} onChange={e => setFilters({...filters, resident: e.target.value})}
-              />
-              <input
-                type="text" placeholder="属性 (警察など)" className="border-gray-100 border rounded-lg p-2 outline-none focus:border-[#b28c6e]"
-                value={filters.attr} onChange={e => setFilters({...filters, attr: e.target.value})}
-              />
-              <select className="border-gray-100 border rounded-lg p-2 outline-none" value={filters.platform} onChange={e => setFilters({...filters, platform: e.target.value})}>
-                <option value="全員">全配信媒体</option>
-                <option value="Twitch">Twitch</option>
-                <option value="YouTube">YouTube</option>
-              </select>
-            </div>
-
-            <div className="space-y-3">
+            <div className="space-y-4">
               {sortData(filteredData.filter(d => d.日付 === selectedDate)).map((item, i) => (
                 <EncounterCard key={i} item={item} />
               ))}
@@ -173,29 +170,32 @@ export default function KoyomiArchive() {
           </div>
         )}
 
-        {/* --- DESCRIPTION VIEW --- */}
+        {/* --- サイト説明画面 --- */}
         {view === 'description' && (
-          <div className="bg-white border border-gray-100 rounded-3xl p-10 shadow-sm">
-            <div className="flex justify-between items-center mb-10">
-              <h2 className="text-2xl font-bold italic text-gray-400">About This Site</h2>
-              <button onClick={() => setView('home')} className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">BACK TO HOME</button>
+          <div className="bg-white border-4 border-gray-300 rounded-3xl p-10 shadow-lg">
+            <div className="flex justify-between items-center mb-10 border-b-2 border-gray-100 pb-4">
+              <h2 className="text-3xl font-black text-gray-900">このサイトについて</h2>
+              <button onClick={() => setView('home')} className="bg-gray-800 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-black transition-colors">ホームに戻る</button>
             </div>
-            <div className="space-y-8 text-sm text-gray-500 leading-relaxed">
+            <div className="space-y-10 text-lg text-gray-700 leading-relaxed font-bold">
               <p>このサイトは、ストグラに登場する「暦家」のメンバーが、日々の活動の中で出会った住民たちを記録するための非公式ファンサイトです。</p>
 
-              <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 flex gap-4">
-                <span className="text-xl">⚠️</span>
-                <p className="text-[11px]">
-                  <strong>注意事項</strong><br />
-                  本サイトは個人によるファン活動の一環であり、配信者様および関係者様とは一切関係ありません。情報の正確性には注意しておりますが、非公式のため抜け漏れが発生する場合があります。
-                </p>
+              <div className="p-8 bg-red-50 rounded-2xl border-2 border-red-200 flex gap-6 items-start">
+                <span className="text-4xl">⚠<i class="fa-solid fa-triangle-exclamation" style="color: #FFD43B;"></i></span>
+                <div>
+                  <h3 className="text-red-600 font-black text-xl mb-2">注意事項</h3>
+                  <p className="text-red-700 text-base">
+                    本サイトは個人によるファン活動の一環であり、配信者様および関係者様とは一切関係ありません。<br />
+                    非公式のため、情報の抜け漏れが発生する場合があります。あらかじめご了承ください。
+                  </p>
+                </div>
               </div>
 
-              <section className="pt-4">
-                <h3 className="text-xs font-black uppercase tracking-widest text-gray-900 mb-3">Developer / Contact</h3>
-                <div className="flex items-center gap-2">
-                  <span className="text-blue-500">X (Twitter) :</span>
-                  <a href="#" className="font-bold hover:underline">@YourSNS_ID</a>
+              <section className="bg-gray-50 p-8 rounded-2xl border-2 border-gray-200">
+                <h3 className="text-xl font-black text-gray-900 mb-4 border-b-2 border-gray-900 inline-block">制作者・連絡先</h3>
+                <div className="flex items-center gap-4 mt-4">
+                  <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-black tracking-widest">X / Twitter</span>
+                  <a href="#" className="text-2xl font-black text-blue-600 hover:underline">@YourSNS_ID</a>
                 </div>
               </section>
             </div>
@@ -207,36 +207,37 @@ export default function KoyomiArchive() {
   );
 }
 
-// --- サブコンポーネント: 出会いカード ---
+// --- カード：文字を大きく、色を白に固定 ---
 const EncounterCard = ({ item }: { item: any }) => {
   const memberColor = MEMBER_INFO[item.暦家キャラ] || "#666";
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl mb-3 flex overflow-hidden shadow-sm hover:shadow-md transition-all">
-      <div className="w-16 md:w-24 flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white px-2 text-center leading-tight" style={{ backgroundColor: memberColor }}>
+    <div className="bg-white border-2 border-gray-300 rounded-2xl mb-4 flex overflow-hidden shadow-md hover:shadow-xl transition-all">
+      <div className="w-20 md:w-28 flex-shrink-0 flex items-center justify-center text-sm font-black text-white px-3 text-center leading-tight" style={{ backgroundColor: memberColor }}>
         {item.暦家キャラ}
       </div>
-      <div className="flex-1 p-4 md:p-5 flex flex-col md:flex-row justify-between md:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-3 mb-1.5">
-            <span className="text-[10px] font-mono font-bold text-gray-300">{item.日付}</span>
-            <span className="text-[9px] font-black text-[#b28c6e] bg-[#b28c6e]/10 px-2 py-0.5 rounded uppercase">{item.シーズン}</span>
-            {item.属性 && <span className="text-[9px] font-bold text-blue-400">#{item.属性}</span>}
+      <div className="flex-1 p-6 md:p-8 flex flex-col md:flex-row justify-between md:items-center gap-6">
+        <div className="space-y-3">
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-black bg-gray-100 text-gray-500 px-3 py-1 rounded">{item.日付}</span>
+            <span className="text-sm font-black text-white bg-gray-900 px-3 py-1 rounded uppercase tracking-widest">{item.シーズン}</span>
+            {item.属性 && <span className="text-sm font-black text-blue-600 border-2 border-blue-600 px-3 py-0.5 rounded-full">#{item.属性}</span>}
           </div>
-          <div className="font-black text-gray-800 tracking-tight">
+          <div className="text-2xl font-black text-gray-900 tracking-tighter">
             {item.住民キャラ}
-            <span className="text-[10px] font-normal text-gray-300 ml-2 tracking-normal">@{item.住民プレイヤー}</span>
+            <span className="text-base font-bold text-gray-400 ml-4">配信者：{item.住民プレイヤー}</span>
           </div>
-          <div className="text-[11px] text-gray-400 mt-1.5 flex items-center gap-1">
-            <span className="opacity-40 grayscale">📍</span> {item.場所 || "Location Unknown"}
+          <div className="text-base text-gray-600 font-bold flex items-center gap-2">
+            <span className="text-xl"><i class="fa-solid fa-map-pin"></i></span> 会った場所：{item.場所 || "（不明）"}
           </div>
+          {item.備考 && <div className="text-sm bg-gray-50 p-3 rounded border-l-4 border-gray-300 text-gray-500 font-bold">{item.備考}</div>}
         </div>
         <a
           href={item.URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-center bg-gray-900 text-white text-[10px] font-black px-6 py-2.5 rounded-full hover:bg-gray-700 transition-colors uppercase tracking-widest shadow-sm"
+          className="text-center bg-gray-900 text-white text-base font-black px-10 py-4 rounded-full hover:bg-black transition-all shadow-lg active:scale-95"
         >
-          {item.配信}
+          アーカイブを開く
         </a>
       </div>
     </div>
