@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Papa from 'papaparse';
 
 // --- 設定 ---
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS22_uNTvQLLzkEE8BDuWMt-q4_Se9PfzC8MWJ-Z9C05PXYg5Ak0Mf5-SE5WMbZYus34xGHOLKMvULA/pubhtml';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS22_uNTvQLLzkEE8BDuWMt-q4_Se9PfzC8MWJ-Z9C05PXYg5Ak0Mf5-SE5WMbZYus34xGHOLKMvULA/pub?output=csv';
 
 const MEMBER_COLORS: { [key: string]: string } = {
   "暦家": "#b28c6e",
