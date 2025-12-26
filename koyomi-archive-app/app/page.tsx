@@ -14,7 +14,7 @@ const MEMBER_INFO: { [key: string]: string } = {
 const BIRTH_ORDER = ["にこ", "いん", "ゆうみ", "しんあ", "あずみ", "ひるの", "みう", "あやの", "ゆん", "いのん"];
 
 const LOADING_MESSAGES = [
-  "姉妹たちの記憶を整理しています...",
+  "姉妹の記憶を整理しています...",
   "住民名簿をめくっています...",
   "記憶の断片を整理中...",
   "過去のアーカイブを探しています...",
@@ -29,6 +29,7 @@ export default function KoyomiArchive() {
   const [data, setData] = useState<any[]>([]);
   const [view, setView] = useState<View>('home');
   const [selectedDate, setSelectedDate] = useState('');
+  const [loading, setLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null); // ホームのアコーディオン用
   // --- 修正点：日付一覧用のフィルターステート ---
