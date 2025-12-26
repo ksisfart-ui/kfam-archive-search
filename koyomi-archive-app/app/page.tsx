@@ -13,13 +13,23 @@ const MEMBER_INFO: { [key: string]: string } = {
 
 const BIRTH_ORDER = ["にこ", "いん", "ゆうみ", "しんあ", "あずみ", "ひるの", "みう", "あやの", "ゆん", "いのん"];
 
+const LOADING_MESSAGES = [
+  "姉妹たちの記憶を整理しています...",
+  "住民名簿をめくっています...",
+  "記憶の断片を整理中...",
+  "過去のアーカイブを探しています...",
+  "姉妹の足跡を復元中。まもなく完了...",
+  "過去の記憶回路への接続を開始します...",
+  "ただいま資料を準備いたします..."
+];
+
 type View = 'home' | 'history' | 'description' | 'detail';
 
 export default function KoyomiArchive() {
   const [data, setData] = useState<any[]>([]);
   const [view, setView] = useState<View>('home');
   const [selectedDate, setSelectedDate] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null); // ホームのアコーディオン用
   // --- 修正点：日付一覧用のフィルターステート ---
   const [historyYear, setHistoryYear] = useState('すべて');
@@ -30,6 +40,9 @@ export default function KoyomiArchive() {
   });
 
   useEffect(() => {
+    // ランダムなメッセージを選択
+    setLoadingMessage(LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]);
+
      Papa.parse(CSV_URL, {
       download: true, header: true, skipEmptyLines: true,
       complete: (results) => {
@@ -69,7 +82,12 @@ export default function KoyomiArchive() {
     return [...data].sort((a, b) => b.日付.localeCompare(a.日付))[0].日付;
   }, [data]);
 
-  if (loading) return <div className="flex justify-center items-center h-screen bg-white font-sans text-slate-500 text-lg">データを読み込み中...</div>;
+  if (loading) return (
+    <div className="flex flex-col justify-center items-center h-screen bg-slate-50 font-sans">
+      <div className="w-12 h-12 border-4 border-[#b28c6e]/20 border-t-[#b28c6e] rounded-full animate-spin mb-6"></div>
+      <p className="text-slate-500 font-bold animate-pulse">{loadingMessage}</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-20">
